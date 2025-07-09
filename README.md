@@ -22,7 +22,6 @@
 
 - `oprf/`：OPRF 相关源码及测试
 - `bazel/`：Bazel 构建相关脚本
-- `volepsi/`：VOLE-PSI 相关实现（如有）
 
 ## 依赖管理
 

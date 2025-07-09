@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "oprf/basic_ecdh_oprf.h"
+#include "psi/algorithm/ecdh/ub_psi/basic_ecdh_oprf.h"
 
 #include <future>
 #include <iostream>
@@ -28,9 +28,12 @@
 #include "yacl/crypto/rand/rand.h"
 #include "yacl/crypto/tools/prg.h"
 
-#include "oprf/ecdh_oprf_selector.h"
+#include "curve/oprf/ecdh_oprf.h"
+#include "psi/algorithm/ecdh/ub_psi/ecdh_oprf_selector.h"
 
 namespace psi::ecdh {
+
+
 struct TestParams {
   size_t items_size;
   CurveType type = CurveType::CURVE_SECP256K1;
@@ -40,45 +43,26 @@ class BasicEcdhOprfTest : public ::testing::TestWithParam<TestParams> {};
 
 TEST_P(BasicEcdhOprfTest, Works) {
   auto params = GetParam();
+  
+  // 创建EcdhOPRF实例
+  EcdhOPRF oprf("",params.type);
 
-  yacl::crypto::Prg<uint64_t> prg(yacl::crypto::SecureRandU64());
 
-  std::shared_ptr<IEcdhOprfServer> dh_oprf_server =
-      CreateEcdhOprfServer(OprfType::Basic, params.type);
-
-  std::vector<uint8_t> client_sk(kEccKeySize);
-  prg.Fill(absl::MakeSpan(client_sk));
-
-  std::shared_ptr<IEcdhOprfClient> dh_oprf_client =
-      CreateEcdhOprfClient(client_sk, OprfType::Basic, params.type);
-
+  // 准备测试数据
   std::vector<std::string> items_vec(params.items_size);
-
+  yacl::crypto::Prg<uint64_t> prg(yacl::crypto::SecureRandU64());
+  
   for (size_t idx = 0; idx < params.items_size; ++idx) {
     items_vec[idx].resize(kEccKeySize);
     prg.Fill(absl::MakeSpan(items_vec[idx]));
   }
-
-  std::string server_evaluted = dh_oprf_server->FullEvaluate(items_vec[0]);
-
-  std::string blinded_item = dh_oprf_client->Blind(items_vec[0]);
-  std::string mask_item = dh_oprf_server->Evaluate(blinded_item);
-  std::string client_evaluted =
-      dh_oprf_client->Finalize(items_vec[0], mask_item);
-
-  EXPECT_EQ(server_evaluted, client_evaluted);
-
-  std::vector<std::string> server_evaluted_vec =
-      dh_oprf_server->FullEvaluate(items_vec);    
-
-  std::vector<std::string> blinded_item_vec = dh_oprf_client->Blind(items_vec);
-
-  std::vector<std::string> mask_item_vec =
-      dh_oprf_server->Evaluate(blinded_item_vec);
-
-  std::vector<std::string> client_evaluted_vec =
-      dh_oprf_client->Finalize(items_vec, mask_item_vec);
-  SPDLOG_INFO("server_evaluted_vec: {}", int(blinded_item_vec[0][32]));
+  
+  // 批量测试
+  std::vector<std::string> server_evaluted_vec = oprf.FullEvaluate(items_vec);
+  std::vector<std::string> blinded_item_vec = oprf.Blind(items_vec);
+  std::vector<std::string> mask_item_vec = oprf.Evaluate(blinded_item_vec);
+  std::vector<std::string> client_evaluted_vec = oprf.Finalize(items_vec, mask_item_vec);
+  
   EXPECT_EQ(server_evaluted_vec, client_evaluted_vec);
 }
 
@@ -89,5 +73,4 @@ INSTANTIATE_TEST_SUITE_P(
                     TestParams{1, CurveType::CURVE_FOURQ},
                     TestParams{10, CurveType::CURVE_FOURQ},
                     TestParams{50, CurveType::CURVE_FOURQ}));
-
-}  // namespace psi::ecdh
+}
