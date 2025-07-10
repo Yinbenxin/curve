@@ -21,10 +21,10 @@ import string
 import binascii
 
 # 导入EcdhOPRF模块
-from libecdh_oprf import EcdhOPRF, CurveType
+from pycurve.oprf import EcdhOPRF, CurveType
 
 class TestEcdhOPRF(unittest.TestCase):
-#
+
     def sample(self, curve_type, ele_num, ele_size):
         # 创建EcdhOPRF实例，使用默认参数（空密钥和SECP256K1曲线）
         oprf = EcdhOPRF("", curve_type)
@@ -44,10 +44,6 @@ class TestEcdhOPRF(unittest.TestCase):
         results = oprf.FullEvaluate(inputs)
         # print(f"results: {results}")
         self.assertEqual(len(results), len(inputs))
-        # 打印python版本   
-        print(f"python version: {sys.version}")
-        # 打印python位置
-        print(f"python path: {sys.executable}")
         
         # 测试盲化-评估-完成流程
         blinded = oprf.Blind(inputs)
