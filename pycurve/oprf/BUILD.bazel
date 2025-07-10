@@ -9,6 +9,7 @@ pybind_extension(
     srcs = ["libecdh_oprf.cc"],
     linkopts = select({
         "@platforms//os:windows": ["/FORCE:UNRESOLVED"],
+        "@platforms//os:linux": ["-static-libstdc++", "-static-libgcc"],
         "//conditions:default": [],
     }),
     deps = [

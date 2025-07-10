@@ -37,7 +37,7 @@ class BazelBuildExt(build_ext):
 
         # 调用Bazel构建目标
         subprocess.check_call(
-            ['bazel', 'build', ext.bazel_target],
+            ['bazel', 'build', '--config=linux-release', ext.bazel_target],
             cwd=os.path.abspath(os.path.dirname(__file__))
         )
 

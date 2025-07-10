@@ -20,6 +20,10 @@ curve_cc_library(
     name = "ecdh_oprf",
     srcs = ["ecdh_oprf.cc"],
     hdrs = ["ecdh_oprf.h"],
+    linkopts = select({
+        "@platforms//os:linux": ["-static-libstdc++", "-static-libgcc"],
+        "//conditions:default": [],
+    }),
     deps = [
         "@psi//psi/algorithm/ecdh/ub_psi:basic_ecdh_oprf",
         "@psi//psi/algorithm/ecdh/ub_psi:ecdh_oprf_selector",
