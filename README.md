@@ -9,7 +9,7 @@
 
 2. 克隆本仓库并进入目录：
    ```sh
-   git clone git@github.com:Yinbenxin/curve.git
+   git clone https://github.com/Yinbenxin/curve.git
    cd curve
    ```
 
