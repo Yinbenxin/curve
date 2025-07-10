@@ -26,4 +26,14 @@ else
     else
         echo "失败：libstdc++仍然是动态链接"
     fi
+    
+    # 检查是否静态链接了libc
+    echo "\n检查是否静态链接了libc："
+    if ! ldd build/lib*/pycurve/oprf/libecdh_oprf.so | grep -q libc.so; then
+        echo "成功：libc已静态链接"
+    else
+        echo "失败：libc仍然是动态链接"
+        echo "当前libc版本："
+        ldd build/lib*/pycurve/oprf/libecdh_oprf.so | grep libc.so
+    fi
 fi

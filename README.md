@@ -18,6 +18,20 @@
    bazel run //oprf:basic_ecdh_oprf_test
    ```
 
+## 静态链接构建
+
+为了避免对特定版本的系统库（如libc.so.6）的依赖，可以使用静态链接方式构建：
+
+```sh
+# 在本地构建静态链接版本
+./build_static.sh
+
+# 或者在Docker容器中构建
+./docker/build_in_docker.sh
+```
+
+详细信息请参考 [静态链接指南](STATIC_LINKING.md)。
+
 ## 目录结构
 
 - `oprf/`：OPRF 相关源码及测试

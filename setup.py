@@ -36,10 +36,18 @@ class BazelBuildExt(build_ext):
         os.makedirs(extdir, exist_ok=True)
 
         # 调用Bazel构建目标
-        subprocess.check_call(
-            ['bazel', 'build', '--config=linux-release', ext.bazel_target],
-            cwd=os.path.abspath(os.path.dirname(__file__))
-        )
+        if sys.platform == 'linux' or sys.platform.startswith('linux'):
+            # Linux环境使用完全静态链接配置
+            subprocess.check_call(
+                ['bazel', 'build', '--config=linux-static', '--config=linux-release', ext.bazel_target],
+                cwd=os.path.abspath(os.path.dirname(__file__))
+            )
+        else:
+            # 其他环境使用默认配置
+            subprocess.check_call(
+                ['bazel', 'build', '--config=linux-release', ext.bazel_target],
+                cwd=os.path.abspath(os.path.dirname(__file__))
+            )
 
         # 找到构建的.so文件并复制到正确的位置
         bazel_bin_dir = os.path.join(

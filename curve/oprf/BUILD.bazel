@@ -21,7 +21,7 @@ curve_cc_library(
     srcs = ["ecdh_oprf.cc"],
     hdrs = ["ecdh_oprf.h"],
     linkopts = select({
-        "@platforms//os:linux": ["-static-libstdc++", "-static-libgcc"],
+        "@platforms//os:linux": ["-static-libstdc++", "-static-libgcc", "-Wl,--no-as-needed", "-Wl,-Bstatic", "-Wl,--whole-archive", "-lpthread", "-Wl,--no-whole-archive", "-static"],
         "//conditions:default": [],
     }),
     deps = [

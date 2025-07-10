@@ -44,6 +44,11 @@ build:benchmark --copt -march=native
 build:linux-release --action_env=BAZEL_LINKOPTS=-static-libstdc++:-static-libgcc
 build:linux-release --action_env=BAZEL_LINKLIBS=-l%:libstdc++.a:-l%:libgcc.a
 
+# 完全静态链接，包括libc
+build:linux-static --linkopt=-static
+build:linux-static --linkopt=-static-libgcc
+build:linux-static --linkopt=-static-libstdc++
+
 # platform specific config
 # Bazel will automatic pick platform config since we have enable_platform_specific_config set
 build:macos --copt=-Wno-unused-command-line-argument
